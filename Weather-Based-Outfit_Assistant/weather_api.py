@@ -1,12 +1,27 @@
 import requests
-from key import WEATHERSTACK_API_KEY  # Import the API key from key.py
+from key import WEATHERSTACK_API_KEY  # Weatherstack API key
+from key import IPINFO_API_KEY     # ipinfo.io API key
 
+def get_location():
+    """
+    Fetch the user's city using the ipinfo.io API.
+
+    Returns:
+        str: The detected city name.
+    """
+    url = f"https://ipinfo.io?token={IPINFO_API_KEY}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        return data['city']
+    else:
+        raise Exception(f"Error fetching location: {response.status_code}")
 
 def get_weather(city):
     """
-    Weather data for a given city in Fahrenheit.
+    Fetch weather data for a given city in Fahrenheit.
 
-    Parameteres:
+    Parameters:
         city (str): The name of the city.
 
     Returns:
@@ -22,20 +37,3 @@ def get_weather(city):
             raise Exception("No weather data found in the response.")
     else:
         raise Exception(f"Error fetching weather data: {response.status_code}")
-
-
-# Test function
-def test_get_weather():
-    city = "Seattle"  # City to test
-    try:
-        weather_data = get_weather(city)
-        print("Weather data retrieved successfully:")
-        print(f"City: {weather_data['location']['name']}")
-        print(f"Temperature: {weather_data['current']['temperature']}°F")
-        print(f"Condition: {weather_data['current']['weather_descriptions'][0]}")
-    except Exception as e:
-        print(f"Test failed: {e}")
-
-
-if __name__ == "__main__":
-    test_get_weather()
